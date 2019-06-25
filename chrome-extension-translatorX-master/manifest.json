@@ -1,0 +1,36 @@
+{
+    "name": "CSDN弹幕插件",
+    "version": "1.0.0",
+    "manifest_version": 2,
+    "description": "一个CSDN弹幕插件",
+    "permissions": ["storage"],
+    "author": "3",
+    "content_scripts": [{
+        "js": [ 
+            "js/lib/jquery.min.js", 
+            "js/lib/Tip.js", 
+            "js/lib/Comment.js", 
+            "js/main.js" ,
+            "js/CommentController.js" ,
+            "js/content-script.js"
+        ],
+        "css": [
+            "css/main.css",
+	        "css/font-awesome.css",
+            "css/bootstrap.css"
+        ], 
+        // ,"http://*/*"
+        "matches": ["https://blog.csdn.net/*"],
+        "run_at": "document_start"
+    }],
+    "browser_action": {
+        "default_title": "translate1",
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "scripts": ["backgroundHttp.js", "background.js"],
+        "persistent": false
+    },
+    "web_accessible_resources": ["fonts/*"],
+    "options_page": "options.html"
+}
