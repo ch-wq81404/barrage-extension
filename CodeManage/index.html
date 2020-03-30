@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="assets/css/layui.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+	<link rel="stylesheet" href="assets/Font-Awesome-3.2.1/css/font-awesome.min.css">
+    <link rel="icon" href="/favicon.ico">
+    <title>管理后台</title>
+	<script> 
+		
+		//index页面作为中转站，接收extension的消息，转发给console.html
+		 window.addEventListener('message',function(event) {
+		  console.log("我接受到了消息")
+			// console.log(document.getElementById('asdg').length)
+			 console.log("以上是找到的代码块")
+		  var iframePopup=document.getElementById('asdg').contentWindow;
+           iframePopup.postMessage(event.data, "http:/localhost/codeout/view/console")
+		    console.log("我发出了传向子页面的消息")
+		   //清空
+        });
+		
+	</script>
+</head>
+<body class="layui-layout-body">
+	
+ <div class="controls" >
+    <div class="new-post">
+        <div class="fa fa-plus icon icon-plus"></div>
+        <div class="fa fa-pencil icon icon-pencil"></div>
+    </div>
+    
+</div>
+
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header custom-header">
+            
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item slide-sidebar" lay-unselect onclick='deleteIcon()'>
+                    <a href="javascript:;" class="icon-font"><i class="ai ai-menufold"></i></a>
+                </li>
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a id="login-username" href="javascript:;">用户名</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="">关于我们</a></dd>
+                        <dd><a id="logout" href="login.html" >退出</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+
+        <div class="layui-side custom-admin">
+            <div class="layui-side-scroll">
+
+                <div class="custom-logo">
+                    <img src="assets/images/logo.png" alt=""/>
+                    <h1>Codes Admin</h1>
+                </div>
+                <ul id="Nav" class="layui-nav layui-nav-tree">
+                    <li class="layui-nav-item mycode">
+                      
+                        <a href="javascript:;">
+                            <i class="layui-icon">&#xe609;</i>
+                            <em>我的代码</em>
+                        </a>
+                        <dl class="layui-nav-child">
+							<script src="assets/layui.js"></script>
+							<script src="index.js" data-main="home"></script>
+                            <dd><a href="views/console.html?class=1">新建文件夹</a></dd>
+							
+                        </dl>
+					
+                    </li>
+                    
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="layui-body">
+             <div class="layui-tab app-container" lay-allowClose="true" lay-filter="tabs">
+                <ul id="appTabs" class="layui-tab-title custom-tab"></ul>
+                <div id="appTabPage" class="layui-tab-content"></div>
+            </div>
+        </div>
+
+
+	</div>
+<div class="layui-footer">
+ <p>© 生产实习：<a href="http://www.mycodes.net/" target="_blank">2019/7</a></p>
+</div>
+	
+
+<script src="assets/jquery-3.4.1.min.js"></script>
+<script src="assets/Myscript.js"></script>
+<script>
+var fold = false;
+var lang;
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+  
+	
+	window.onload=function(){
+		var $ = layui.$;
+		var username=layui.sessionData('session');
+		if(username.nickname!=undefined)
+		{
+		    $('#login-username').html(username.nickname);
+			var classes=getFolderName();
+			initClassList(classes);
+			
+			//提示选择文件夹和语言，然后打开或跳转至tab
+			layui.use('form',function(){
+				var form=layui.form;
+				layui.use('layer',function(){
+					var layer=layui.layer;
+					layer.open({
+						btn:['确定'],
+						type:1,
+						scrollbar: false,
+						area: ['570px', '270px'],
+						title:'选择要编辑的文件夹',
+						content:`
+	<div class="layui-content" id="choose-content">
+			<div class="layui-row">
+				<div class="layui-card">
+					<form class="layui-form layui-card-body" action="">
+						<div class="layui-form-item">
+						<label class="layui-form-label">文件夹名称</label>
+							<div class="layui-input-inline" style="width: 100px;">
+										<select name="sex">
+										</select>     
+									</div> 
+						</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">代码语言</label>
+						<div class="layui-input-block">
+							<input type="radio" name="type" value="C" title="C">
+							<input type="radio" name="type" value="C++" title="C++">
+						  <input type="radio" name="type" value="python" title="python">
+						  <input type="radio" name="type" value="java" title="java" checked>
+							<input type="radio" name="type" value="txt" title="txt" checked>
+						</div>
+					  </div>
+					</form>
+				</div>
+			</div>
+		</div>`,
+						yes:function(index, layero){
+							var txtclass=$(layero).find("select[name='sex']").val();
+							layui.sessionData('session',{
+								key:'txtclass',
+								value:txtclass
+							});
+								if(txtclass!="新建文件夹"){
+								   	var language=$(layero).find('input[type=radio]:checked')[0].value;
+									lang=language;
+									var url=`views/console.html?txtclass=${txtclass}&language=${lang}`;
+									//如果还没有打开过该文件夹,新增tab
+									element.tabAdd('tabs', {
+										title: txtclass 
+										,content: content(url)
+										,id: url 
+									});
+									element.tabChange('tabs', url);
+									
+								}
+								else{
+									var language=$(layero).find('input[type=radio]:checked')[0].value;
+									lang=language;
+									var url=`views/console.html?txtclass=${txtclass}&language=${lang}`;
+									//如果还没有打开过该文件夹,新增tab
+									element.tabAdd('tabs', {
+										title: txtclass 
+										,content: content(url)
+										,id: url 
+									});
+									element.tabChange('tabs', url);
+								}
+							layer.close(index);
+							},
+							
+						success:function(layero, index){
+							if(classes.length!=0)
+								setClass(layero,classes);
+							else{
+								var str=`<label>无文件夹</label>`;
+								$(layero).find("select[name='sex']").append($(str));
+							}
+							form.render();
+						}
+				});
+			});
+			//从数据库中取出代码块初始化页面	  
+			});
+			
+		}
+		else
+		{
+			readonly();
+			layui.use('layer', function(){
+			  var layer = layui.layer;
+			  layer.open({
+				  title: '未登录',
+				  content: '登陆以后才能正常使用哦~',
+				  btn:['去登陆'],
+				  yes: function(index, layero){
+					layer.close(index);
+					layui.use('element', function(){
+						var element = layui.element;
+
+						element.tabAdd('tabs', {
+							title: '登陆页' 
+							,content: content('login.html')
+							,id: 'login.html' 
+						})
+						element.tabChange('tabs', 'login.html');
+					});
+				  },
+				cancel: function(index, layero){ 
+					return false;
+				}
+			 });
+		   });  
+		}
+	};
+	
+	
+  $('.lateradd').on("click",function(){
+  	console.log("cllllc");
+  });
+
+  function content(src) {
+    var Tabs = document.querySelectorAll("#appTabs li");
+    var iframe = document.createElement("iframe");
+      iframe.setAttribute("frameborder", "0");
+      iframe.setAttribute("src", src);
+      iframe.setAttribute("data-id", $(Tabs).length);
+      return iframe.outerHTML;
+  };
+
+  $('.controls').hover(function() {
+    $('.controls .new-post .icon-pencil').addClass('active');
+    $('.controls .new-post .icon-plus').addClass('unactive');
+  }, function() {
+    $('.controls .new-post .icon-pencil').removeClass('active');
+    $('.controls .new-post .icon-plus').removeClass('unactive');  
+  });
+
+	$('.controls').on('click',function(event){   //读取input标签的值，然后添加文件夹
+		var father = document.getElementsByClassName('mycode');
+		var child = $("<dl class='layui-nav-child'> <dd><input  class='docname' name='docname'/></dd></dl>");
+		father[0].appendChild(child[0]);
+		var input = document.getElementsByClassName('docname')[0];
+		input.focus();
+		input.onblur = function(){
+			var text = input.value;
+			father[0].removeChild(child[0]); 
+			var id =new Date().getTime();
+			if(text!=''){
+				var username=layui.sessionData('session').nickname;
+				var AjaxURL="http://localhost/Chrome-Ext/saveTxtClass.php"
+				$.ajax({
+					type: "GET",
+					dataType: "json",
+					url: AjaxURL,
+					data: {
+						username:username,
+						txtclass:text
+					},
+					error: function(data) {
+							//新增一个Tab项
+						if(data.responseText!="success")
+							alert(data.responseText);
+						else{
+							addClassList(text);
+							location.reload();
+						}
+						
+
+					},
+				});
+			}; 
+  	    };	
+   });	
+	$('#logout').click(function(){
+		layui.sessionData('session',{
+			key:'nickname',
+			remove:'true'});
+	});
+function addClassList(text){
+	var father = document.getElementsByClassName('mycode');
+	if(text!=''){
+		var Docname = $(`<dl class='layui-nav-child'><dd><a href='views/console.html?txtclass=${text}&language=${lang}'  class='lateradd'>${text}</dd></dl>`);
+		father[0].appendChild(Docname[0]);
+	};
+}
+  $('.site-demo-active').on('click', function(){
+    var othis = $(this), type = othis.data('type');
+    active[type] ? active[type].call(this, othis) : '';
+  });
+  
+  //Hash地址的定位
+  var layid = location.hash.replace(/^#test=/, '');
+  element.tabChange('test', layid);
+	
+  element.on('tab(test)', function(elem){
+    location.hash = 'test='+ $(this).attr('lay-id');
+  });
+ 
+function readonly(){
+		var $ = layui.$;
+		$("input").attr('disabled', true);
+		$("textarea").attr('disabled', true);
+		$(':radio').attr('disabled', true);
+		$(':checkbox').attr('disabled', true);
+		$(':button').attr('disabled', true);
+		$('a').attr('disabled',true);
+		$('a').removeAttr('href');
+		$('select').attr('disabled', true);
+}
+function initClassList(classes){
+	for(var i=0;i<classes.length;i++){
+		addClassList(classes[i]);
+	}
+}
+function getFolderName(){
+	var $ = layui.$;
+	var classes;
+	var username=layui.sessionData('session').nickname;
+	var AjaxURL="http://localhost/Chrome-Ext/getClassName.php"
+	$.ajax({
+		async: false,
+        type: "GET",
+        dataType: "json",
+        url: AjaxURL,
+        data: {
+			username:username,
+		},
+        success: function (data) {
+			classes=data;
+        },
+        error: function(data) {
+        	alert("error:"+data.responseText);
+        },
+      });
+	  return classes;
+  };
+function setClass(layero,classes){
+	let str;
+	var $=layui.$;
+	for(var i=0;i<classes.length;i++){
+		str=`<option value="${classes[i]}">${classes[i]}</option>`;
+		$(layero).find("select[name='sex']").append($(str));
+	}
+} 
+
+});
+
+function deleteIcon(){
+    var icon = document.getElementsByClassName('controls');
+	if(!fold)
+	{
+		icon[0].hidden="hidden";
+		fold=true;
+	}
+    else
+    {
+        fold=false;
+        icon[0].hidden=false;
+    }
+}
+	   
+
+
+
+
+</script>
+
+</body>
+</html>

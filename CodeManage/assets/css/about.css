@@ -1,0 +1,33 @@
+@import url(http://fonts.googleapis.com/css?family=Ribeye+Marrow);
+body {
+    background: #EFEAE1;
+}
+div {
+    top:200px;
+    margin: 0 auto;
+    position: relative;
+    text-align: center;
+    width: 420px;
+}
+p {
+    position: absolute;
+    top: 250px;
+    left: 140px;
+    color: #584B4F;
+    cursor: pointer;
+}
+p:hover + h1:after {
+    content: '{0_0}';
+    color: #65B891;
+}
+p:active   + h1:after {
+    content: '{>_<}';
+    color: #65B891;
+}
+h1:after {
+    content: '{-_-}';
+    color: #584B4F;
+    font-family: 'Ribeye Marrow', cursive;
+    font-size: 4em;
+    transition: 3s all;
+}

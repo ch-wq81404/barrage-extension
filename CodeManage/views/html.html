@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf8' />
+     <link rel="stylesheet" href="../assets/css/view.css" />
+     <link rel="stylesheet" href="../assets/css/layui.css" />
+    <title>运行代码</title>
+    <script type="text/javascript">
+        	
+
+    function runCode(oCode) {
+    	$("#output").html('');
+        var right = document.getElementsByClassName('#output');
+        $("#output").append(oCode.value);
+        
+    }
+    </script>
+</head>
+<body>
+
+
+  <div class="column">
+    <div class="column-left whitebg">
+        <div class="resize-bar"></div>
+        <div class="resize-line"></div>
+        <div class="resize-save">
+
+
+<form> 
+   <textarea id="yourcode" rows="10" cols="45">
+      
+      </textarea>
+      <br/>
+<button type="button" class="layui-btn runBtn" onclick="runCode(yourcode)">运行</button> 
+</form> 
+        </div>                                            
+    </div>
+    <div class="column-right whitebg">
+        <h2>结果</h2>
+        <pre id="output" ></pre> 
+    </div>
+</div>
+
+<script src="../assets/jquery-3.4.1.min.js"></script>
+</body>
+</html>

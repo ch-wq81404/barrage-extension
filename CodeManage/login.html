@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="assets/css/layui.css">
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="icon" href="/favicon.ico">
+    <title>管理后台</title>
+</head>
+<body class="login-wrap">
+    <div class="login-container">
+        <form class="login-form" id="login-form" enctype="multipart/form-data" onSubmit="login()" >
+<!--			action="http://localhost/Chrome-Ext/login_check.php" target="_parent"-->
+            <div class="input-group">
+                <input type="text" id="username" class="input-field" name="username">
+                <label for="username" class="input-label">
+                    <span class="label-title">用户名</span>
+                </label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="Mypass" class="input-field" name="password">
+                <label for="password" class="input-label">
+                    <span class="label-title">密码</span>
+                </label>
+            </div>
+            <button type="submit" id="login-button" class="login-button" value="登录" >登陆<i class="ai ai-enter"></i>
+<!--				<input type="submit" id="login-button" class="login-button" value="登录" />-->
+			</button>
+			<hr style="margin-top:10px;"/>
+			<p style="font-size:12px;color:#D9D9D9"><a href="signin.html" class="fl">立即注册</a></p>
+        </form>
+    </div>
+</body>
+<script src="assets/layui.js"></script>
+<script src="index.js" data-main="login"></script>
+<script>
+	window.onload=function(){
+		layui.sessionData('session',{
+			key:'nickname',
+			remove:true
+		});
+				};
+	function login()
+		{
+			var $=layui.$;
+			var username=$('#username').val();
+			var password=$('#Mypass').val();
+			var AjaxURL= 'http://localhost/Chrome-Ext/login_check.php';       
+                $.ajax({
+					asycn:false,
+                    type: "GET",
+                    dataType: "json",
+                    url: AjaxURL,
+                    data: {
+						username:username,
+						password:password
+					},
+                    success: function (data) {
+						if(data!="用户名或密码错误" && data!="用户名不存在")
+						{
+							layui.sessionData('session',{
+								key:'nickname',
+								value:data.username
+							});
+						}
+						else
+							alert(data);
+                    },
+                    error: function(data) {
+                        alert("error:"+data.responseText);
+                     },
+                });
+			if(layui.sessionData('session')!=null){
+				alert("登陆成功，请刷新页面后使用~");
+			}
+		};
+	window.onload=function(){
+		var $ = layui.$;
+		$(":input").val("");
+	};
+</script>
+
+</html>

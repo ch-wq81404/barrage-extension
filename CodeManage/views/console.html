@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="../assets/css/layui.css">
+    <link rel="stylesheet" href="../assets/css/view.css" />
+    <link rel="stylesheet" href="../assets/Font-Awesome-3.2.1/css/font-awesome.min.css" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!--    <link rel="icon" href="/favicon.ico">-->
+	
+	<!-- 引入样式 -->
+    <link rel="stylesheet" type="text/css" href="http://unpkg.com/iview/dist/styles/iview.css">
+    <script type="text/javascript" src="http://vuejs.org/js/vue.min.js"></script>
+    <script type="text/javascript" src="http://unpkg.com/iview/dist/iview.min.js"></script> <!-- 引入组件库 -->
+    <title></title>
+	
+</head>
+
+<body class="layui-view-body">
+    <div id="app"></div>
+    <!-- 剪贴板内容复制 -->
+    <script>
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {}
+            },
+            mounted: function () {
+                this.open();
+            },
+            methods: {
+                open() {
+                    // this.$Message.success("111111")
+                    var content = ``;
+                    this.$Notice.config({
+                        top: 550,
+                        duration: 7
+                    });
+                    content = this.getClip(content);
+                    if (content == "") {
+                        content = "剪贴板暂无代码\n"
+                    }
+                    // console.log("111" + content)
+                    this.$Notice.info({
+                        title: '需要添加到代码区吗？',
+                        render: h => {
+                            return h('div', [
+                                h('span', {
+                                        style: {
+                                            marginTop: '10px',
+                                            marginBottom: '10px',
+                                            width: '100%',
+                                            display: '-webkit-box',
+                                            '-webkit-box-orient': 'vertical',
+                                            overflow: 'hidden',
+                                            'text-overflow': 'ellipsis',
+                                            'word-break': 'break-all',
+                                            ' white-space': 'normal',
+                                            '-webkit-line-clamp': 3
+                                        }
+                                    },
+                                    content
+                                ),
+                                h('Button', {
+                                    props: {
+                                        type: 'success',
+                                    },
+                                    style: {
+                                        width: '100%',
+                                        display: 'flex',
+                                        'justify-content': 'center',
+                                    },
+                                    on: {
+                                        click: () => {
+                                            addModel(content)
+                                            this.$Message.success('添加成功！')
+                                        },
+                                    }
+                                }, '添加')
+                            ])
+                        }
+                    });
+                },
+                getClip(vessel) {
+                    navigator.clipboard.readText().then(
+                        clipText => vessel = clipText);
+                    return vessel;
+                }
+            }
+        })
+    </script>
+    <div class="layui-content ">
+		        <button class="outicon">
+            <span>Like</span>
+            <div class="emoji-container">
+                <div class="emoji like">
+                    <div class="icon" data-title="Like"></div>
+                </div>
+                <div class="emoji love">
+                    <div class="icon" data-title="Love"></div>
+                </div>
+                <div class="emoji haha">
+                    <div class="icon" data-title="Haha"></div>
+                </div>
+                <div class="emoji wow">
+                    <div class="icon" data-title="Wow"></div>
+                </div>
+                <div class="emoji sad">
+                    <div class="icon" data-title="Sad"></div>
+                </div>
+                <div class="emoji angry">
+                    <div class="icon" data-title="Angry"></div>
+                </div>
+            </div>
+        </button>
+		<button class="outicon" onclick="moveBlock()">
+            <i class="material-icons fa fa-share"></i>
+            <p>导出代码</p>
+        </button>
+        <button class="outicon" style="top:55%;"onclick="saveAndDownload()">
+            <i class="material-icons fa fa-share"></i>
+            <p>上传</p>
+        </button>
+<!--
+        <button class="outicon" style=" top: 85%;" onclick="getPre()">
+            <i class="material-icons fa fa-share"></i>
+            <p>上传</p>
+        </button>
+-->
+        <div class="layui-row layui-col-space20">
+            <div id="md9" class="list-content layui-col-sm9 layui-col-md9 "></div>
+            <div class="split layui-col-sm3 layui-col-md3">
+                <pre id="code" class=" ace_editor editcode" style="min-height:400px"><textarea class="codecontent ace_text-input ">
+print("123")
+</textarea></pre>
+            </div>
+        </div>
+    </div>
+<!--    <script src="assets/jquery-3.4.1.min.js"></script>-->
+    <script src="../assets/layui.all.js"></script>
+    <script src="../assets/Myscript.js"></script>
+    <script src="../assets/jquery-3.4.1.min.js"></script>
+    <script src='../assets/TweenMax.min.js'></script>
+    <script src='../assets/TweenLite.min.js'></script>
+    <script src='../assets/Draggable.min.js'></script>
+    <script src='../assets/src/ace.js'></script>
+    <script src='../assets/src/theme-tomorrow.js'></script>
+    <script type="text/javascript" src="../assets/hotkeys/dist/hotkeys.js"></script>
+    <script>
+        var element = layui.element;
+		var $=layui.$;
+		function getQueryUrlString(txtclass) {
+			var reg = new RegExp('(^|&)' + txtclass + '=([^&]*)(&|$)', 'i');
+			var r = window.location.search.substr(1).match(reg);
+			if(r != null) {
+				return decodeURI(r[2]);
+			}
+			return "请选择";
+		 }
+//		while(getQueryUrlString("language")=="请选择") ;
+		
+		var language=getQueryUrlString("language");
+		console.log(language);
+    </script>
+
+
+    <!--     改变位置 -->
+    <script>
+        "use strict";
+
+        var rowSize = 100;
+        var colSize = 250;
+        var totalRows = 2;
+        var totalCols = 1;
+
+        var cells = [];
+
+        // Map cell locations to array
+       
+            cells = []
+            for (var row = 0; row < totalRows; row++) {
+                for (var col = 0; col < totalCols; col++) {
+                    cells.push({
+                        x: col * colSize,
+                        y: row * rowSize
+                    });
+                }
+            }
+
+            var container = document.querySelector(".list-content");
+            var listItems = Array.from(document.querySelectorAll(".list-item")); // Array of elements
+            var sortables = listItems.map(Sortable); // Array of sortables
+            var total = sortables.length;
+
+            TweenLite.to(container, 0.5, {
+                autoAlpha: 1
+            });
+
+       function changeIndex(item, to) {
+
+            // Change position in array
+            arrayMove(sortables, item.index, to);
+            // Change element's position in DOM. Not always necessary. Just showing how.
+            if (to === total - 1) {
+                container.appendChild(item.element);
+            } else {
+                var i = item.index > to ? to : to + 1;
+                container.insertBefore(item.element, container.children[i]);
+            }
+
+            // Set index for each sortable
+            sortables.forEach(function (sortable, index) {
+                return sortable.setIndex(index);
+            });
+        }
+
+        function Sortable(element, index) {
+
+            var content = element.querySelector(".item-content");
+            var order = element.querySelector(".order");
+
+            var animation = TweenLite.to(content, 0.3, {
+                boxShadow: "rgba(0,0,0,0.2) 0px 16px 32px 0px",
+                force3D: true,
+                scale: 1.1,
+                paused: true
+            });
+
+            var dragger = new Draggable(element, {
+                onDragStart: downAction,
+                onRelease: upAction,
+                onDrag: dragAction,
+                cursor: "inherit"
+            });
+
+            // Public properties and methods
+            var sortable = {
+                cell: cells[index],
+                dragger: dragger,
+                element: element,
+                index: index,
+                setIndex: setIndex
+            };
+
+            TweenLite.set(element, {
+                x: sortable.cell.x,
+                y: sortable.cell.y
+            });
+
+            function setIndex(index) {
+
+                sortable.cell = cells[index];
+                sortable.index = index;
+                order.textContent = index + 1;
+
+                // Don't layout if you're dragging
+                if (!dragger.isDragging) layout();
+            }
+
+            function downAction() {
+                animation.play();
+                this.update();
+            }
+
+            function dragAction() {
+
+                var col = clamp(Math.round(this.x / colSize), 0, totalCols - 1);
+                var row = clamp(Math.round(this.y / rowSize), 0, totalRows - 1);
+
+                // Calculate the current index based on element's position
+                var index = totalCols * row + col;
+
+                if (index !== sortable.index) {
+                    changeIndex(sortable, index);
+                }
+            }
+
+            function upAction() {
+                animation.reverse();
+                layout();
+            }
+
+            function layout() {
+                TweenLite.to(element, 0.3, {
+                    x: sortable.cell.x,
+                    y: sortable.cell.y
+                });
+            }
+
+            return sortable;
+        }
+
+        // Changes an elements's position in array
+        function arrayMove(array, from, to) {
+            array.splice(to, 0, array.splice(from, 1)[0]);
+        }
+
+        // Clamps a value to a min/max
+        function clamp(value, a, b) {
+            return value < a ? a : value > b ? b : value;
+        }
+    </script>
+
+
+    <!-- 左边代码块的显示 -->
+    <script>
+//		var cache =  layui.cache;
+// cache = 'success';
+        function initLeft() {
+            var theme = 'ace/theme/tomorrow';
+            var mode = 'ace/mode/'+language;
+            var editors = document.querySelectorAll('[data-ace-mode]');
+            for (var i = 0, l = editors.length; i < l; ++i) {
+                var editor = ace.edit(editors[i]);
+                if (editors[i].getAttribute('data-ace-theme')) {
+                    editor.setTheme('ace/theme/' + editors[i].getAttribute('data-ace-theme'));
+                } else {
+                    editor.setTheme(theme);
+                }
+                if (editors[i].getAttribute('data-ace-mode')) {
+                    editor.getSession().setMode('ace/mode/' + editors[i].getAttribute('data-ace-mode'));
+                } else {
+                    editor.getSession().setMode(mode);
+                }
+                editor.renderer.setShowGutter(false);
+                editor.setShowPrintMargin(false);
+                editor.setShowPrintMargin(false);
+                editor.setDisplayIndentGuides(false);
+                editor.setOptions({
+                    maxLines: Infinity,
+                    //readOnly: false,
+                    highlightActiveLine: false,
+                    highlightGutterLine: false
+                });
+            }
+        }
+        window.onload = function () {
+			var username=layui.sessionData('session').nickname;
+			var txtclass=getQueryUrlString('txtclass');
+			var AjaxURL="http://localhost/Chrome-Ext/getCodeBlocks.php";
+			$.ajax({
+				async: false,
+				type: "GET",
+				dataType: "json",
+				url: AjaxURL,
+				data: {
+					username:username,
+					txtclass:txtclass
+				},
+				success: function (data) {
+					if(data.responseText=="NO_CODE_BLOCKS"){
+						alert(data.responseText);
+					}
+					else{
+						for(var i=0;i<data.length;i++){
+						addCodeBlocks(data[i]["content"].toString(),data[i]["title"],data[i]['url'],"sql-code");
+						initLeft();
+						cells.push({
+						   x: 0,
+						   y: row * rowSize
+						});   
+						element.init();
+					}
+					}
+					
+				},
+				error: function(data) {
+					alert("error:"+data.responseText);
+				},
+			  });
+			container = document.querySelector(".list-content");
+			listItems = Array.from(document.querySelectorAll(".list-item")); // Array of elements
+			sortables = listItems.map(Sortable); // Array of sortables
+			var total = sortables.length;
+			TweenLite.to(container, 0.5, {
+				autoAlpha: 1
+			});
+        }
+    </script>
+
+    <!-- 右边代码区的ace.js -->
+
+    <script>
+        //初始化对象
+        var editor = ace.edit("code");
+
+        //设置风格和语言（更多风格和语言，请到github上相应目录查看）
+        var theme = "clouds";
+        editor.setTheme("ace/theme/" + theme);
+        editor.session.setMode("ace/mode/" + language);
+
+        //字体大小
+        editor.setFontSize(18);
+
+        //设置只读（true时只读，用于展示代码）
+        editor.setReadOnly(false);
+
+        //自动换行,设置为off关闭             editor.setOption("wrap", "free")
+
+        //启用提示菜单
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+    </script>
+    <!-- 获取pre标签代码 -->
+    <script>
+          hotkeys('Ctrl+Alt+Z', function () {getPre();});
+        function getPre() {
+            var m = $("pre#code span").text();
+			addCodeBlocks(m,"本页面","javascript:;","new-code",language);
+			this.initLeft();
+            cells.push({
+               x: 0,
+               y: row * rowSize
+            });
+            element.init();
+            container = document.querySelector(".list-content");
+            listItems = Array.from(document.querySelectorAll(".list-item")); // Array of elements
+            sortables = listItems.map(Sortable); // Array of sortables
+            var total = sortables.length;
+
+            TweenLite.to(container, 0.5, {
+                autoAlpha: 1
+            });
+        }
+function addCodeBlocks(m,title,url,sql_code,lang){
+	console.log(m);
+	var n = Number($("span[class=order]:last").text()) + 1;
+	$("#md9").append(
+                '<div class="list-item layui-col-sm12 layui-col-md12">' +
+                '<div class="layui-card item-content">' +
+                '<div class="layui-card-body chart-card">' +
+                '<div class="chart-header">' +
+                '<div class="metawrap">' +
+                '<div class="meta">' +
+                '<span class="order">' + n +
+                '</span>' +
+				'<a class="button closeBlock" onclick="removeBlock(event)" role="button">' +
+                '<i class="icon-remove"></i>' +
+                '</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="chart-body">' +
+                '<div class="contentwrap">' +
+                '<h2>Use examples</h2>' +
+                '<div class="Mycode '+sql_code+'" data-ace-mode="'+lang+'">' +
+                m +
+                '</div>' +
+                '</section>' +
+                '</div>' +
+                '</div>' +
+                '<div class="chart-footer">' +
+                '<div class="field">' +
+                '<span>代码源: </span>' +
+                '<a target="_blank" href="'+url+'">'+title+'</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+	totalRows = totalRows + 1;
+} 
+
+
+ </script>
+<!-- 监听消息-->
+	
+<script>
+		window.addEventListener('message',function(event){  
+		//确保发送消息的域名是已知的域名  
+			if(event.origin == "http://localhost"){  
+				//处理接收到的数据  
+				console.log("子页面收到了来自index的消息")
+				
+				var codes = document.getElementById("md9")
+				//codes.innerHTML="<br>";
+				for(var i=event.data.length-1;i>= 0;i--)
+				   {	console.log(event.data[i].content);
+						console.log("我要调用wq的函数0")
+						addMsgCode(event.data[i]);
+				   }
+				}
+			else{
+				console.log("子页面收到外部消息，信息源为"+event.origin+"消息内容是"+event.data)
+			}
+		}, false);  
+		function addMsgCode(data) {
+				var m = data.content;
+				var u = data.url;
+				var t = data.title;
+				var l = data.lang;
+			console.log("我要调用wq的函数1")
+			addCodeBlocks(m,t,u,"new-code",l);
+			console.log("我成功调用wq的函数，应该已经添加了代码")
+			totalRows = totalRows + 1;
+			this.initLeft();
+            cells.push({
+               x: 0,
+               y: row * rowSize
+            });
+            element.init();
+            container = document.querySelector(".list-content");
+            listItems = Array.from(document.querySelectorAll(".list-item")); // Array of elements
+            sortables = listItems.map(Sortable); // Array of sortables
+            var total = sortables.length;
+
+            TweenLite.to(container, 0.5, {
+                autoAlpha: 1
+            });
+		}
+</script>
+<!-- 删除代码块-->
+<script>
+function removeBlock(e) {
+   var block = e.path[6];
+	
+   block.parentNode.removeChild(block);
+   totalRows -= 1;
+	
+	var username=layui.sessionData('session').nickname;
+	var txtclass=getQueryUrlString('txtclass');
+	var m =$(e.currentTarget).parent().parent().parent().parent().children('div').eq(1).children('div').eq(0).children('div').eq(0);
+	var content=m.find('div.ace_text-layer').children('div').eq(1).text();
+	console.log(content);
+	if(m.hasClass('sql-code')){
+		var AjaxURL="http://localhost/Chrome-Ext/deleteSqlCode.php";
+		$.ajax({
+					async: false,
+					type: "GET",
+					dataType: "json",
+					url: AjaxURL,
+					data: {
+						uesername:username,
+						txtclass:txtclass,
+						content:content
+					},
+					success: function (data) {
+						alert(data.reponseText);
+					},
+					error: function(data) {
+						alert(data.responseText);
+					},
+		});
+	}
+}
+</script>
+
+
+    <!-- 快捷键：调整大小 -->
+    <script type="text/javascript">
+hotkeys('Ctrl+left', function () {
+	var objclass = document.getElementsByClassName("split")[0].className;
+    const len = Number(objclass.substring(objclass.length - 1, objclass.length));
+   	var leftlen = 12 - len;
+    var afterleft = 11 - len;
+    var afterlen = len + 1;
+	$('.list-content').removeClass("layui-col-sm" + leftlen);
+    $('.list-content').removeClass("layui-col-md" + leftlen);
+    $('.list-content').addClass("layui-col-md" + afterleft);
+    $('.list-content').addClass("layui-col-sm" + afterleft);
+    $('.split').removeClass("layui-col-sm" + len);
+    $('.split').removeClass("layui-col-md" + len);
+    $('.split').addClass("layui-col-md" + afterlen);
+    $('.split').addClass("layui-col-sm" + afterlen);
+    if ($('.editcode').hasClass("width" + len)) {
+    	$('.editcode').removeClass("width" + len);
+    }
+    $('.editcode').addClass("width" + afterlen);
+});
+
+hotkeys('Ctrl+right', function () {
+            var objclass = document.getElementsByClassName("split")[0].className;
+            const len = Number(objclass.substring(objclass.length - 1, objclass.length));
+            var leftlen = 12 - len;
+            var afterleft = 13 - len;
+            var afterlen = len - 1;
+
+            $('.list-content').removeClass("layui-col-sm" + leftlen);
+            $('.list-content').removeClass("layui-col-md" + leftlen);
+            $('.list-content').addClass("layui-col-md" + afterleft);
+            $('.list-content').addClass("layui-col-sm" + afterleft);
+            $('.split').removeClass("layui-col-sm" + len);
+            $('.split').removeClass("layui-col-md" + len);
+            $('.split').addClass("layui-col-md" + afterlen);
+            $('.split').addClass("layui-col-sm" + afterlen);
+            if ($('.editcode').hasClass("width" + len)) {
+                $('.editcode').removeClass("width" + len);
+            }
+            $('.editcode').addClass("width" + afterlen);
+
+        });
+		
+hotkeys('Ctrl+b', function () {
+            var m = $("pre#code span").text();
+	console.log(language);
+            if(language=='python'){      
+				layer.open({
+					title:'在线运行',
+					type: 2,
+					content:['http://localhost/CodeManage/views/python.html', 'no'],
+					area: ['800px', '400px'],
+					success: function(layero, index){
+						var body = $(window.frames["layui-layer-iframe"+index].document);
+						var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+						console.log(body) //得到iframe页的body内容
+						body.find("#yourcode").val(m);
+						console.log(body.find("#run"));
+						body.find("#run").click();
+						// body.find('textarea').val('')
+					}
+				});     
+			}
+	if(language=='html'){
+        layer.open({
+			  type: 2,
+			  title:'在线运行',
+			  content: ['http://localhost/CodeManage/views/html.html', 'no'],
+			  area: ['800px', '400px'],
+			  success: function(layero, index){
+					var body = $(window.frames["layui-layer-iframe"+index].document);
+					var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+					console.log(body) //得到iframe页的body内容
+					body.find("#yourcode").val(m);
+					console.log(body.find("#run"));
+					body.find("#run").click();
+					// body.find('textarea').val('')
+			  }
+		});    
+	}
+});
+</script>
+		
+<script>
+function saveAndDownload(){
+	var $=layui.$;
+	var username=layui.sessionData('session').nickname;
+	var txtclass=getQueryUrlString('txtclass');
+	var sql_codes=[];
+	var new_code=[];
+	var new_codes=[];
+	$('.layui-card-body').each(function(){
+		var m =$(this).children('div').eq(1).children('div').eq(0).children('div').eq(0);
+		var content=$(this).find('div.ace_text-layer').text();
+//		console.log(content);
+		if(m.hasClass('new-code')){
+			var n=$(this).children('div').eq(2).children('div').eq(0).children('a').eq(0);
+			new_code.push(username,txtclass,content,n.attr('href'),n.text());
+			new_codes.push(new_code);
+			new_code=[];
+		}
+	});
+	var AjaxURL="http://localhost/Chrome-Ext/saveNewCode.php";
+	$.ajax({
+				async: false,
+				type: "GET",
+				dataType: "json",
+				url: AjaxURL,
+				data: {
+					new_codes:new_codes
+				},
+				success: function (data) {
+					alert("success:"+data.responseText);
+				},
+				error: function(data) {
+					if(data.responseText=="success")
+					{
+						$('.Mycode').each(function(){
+							if($(this).hasClass('new-code'))
+							{
+								$(this).addClass('sql-code');
+								$(this).removeClass('new-code');
+							}
+						});
+						alert(data.responseText);
+					}
+					else if(data.responseText=="Error: ")
+						alert("无可上传代码块");
+				},
+	});
+
+	//download()
+//	var language="python";
+    var m = $("pre#code span").text();
+    // 创建a标签
+    var elementA = document.createElement('a');
+    if(language=='python')
+    	elementA.download = +new Date() + ".py";
+    else if(language=='c_cpp')
+        elementA.downland = +new Date()+'.cpp';
+    else 
+		elementA.download = +new Date() + "."+language;
+    elementA.style.display = 'none';
+    var jsonObj={'content':m};
+    //生成一个blob二进制数据，内容为json数据
+    var blob = new Blob([m]);
+      
+    //生成一个指向blob的URL地址，并赋值给a标签的href属性
+    elementA.href = URL.createObjectURL(blob);
+    document.body.appendChild(elementA);
+    elementA.click();
+    document.body.removeChild(elementA);
+	
+}
+function moveBlock(){
+	var sql_codes=[];
+	var new_code=[];
+	var new_codes=[];
+	$('.layui-card-body').each(function(){
+		var m =$(this).children('div').eq(1).children('div').eq(0).children('div').eq(0);
+		var content=$(this).find('div.ace_text-layer').text();
+//		console.log(content);
+		if(m.hasClass('new-code')){
+			var n=$(this).children('div').eq(2).children('div').eq(0).children('a').eq(0);
+			new_code.push(txtclass,content,n.attr('href'),n.text());
+			new_codes.push(new_code);
+			new_code=[];
+		}
+	});
+	var frameId = $(layero).find("iframe").attr('id');
+	console.log(frameId);
+//	var id = $(window.frames[frameId].document).find("#typecoupon").val();
+	
+	
+//	removeBlock(e);
+//	var all_txtclass=layui.sessionData('session').txtclass;
+//	console.log(all_txtclass);
+//	var block = e.path[6];
+//	block.attr('id','move_block');
+//	var id = $(window.frames[frameId].document).find("#typecoupon").val();
+//	console.log(id);
+}
+</script>
+</body>
+</html>
